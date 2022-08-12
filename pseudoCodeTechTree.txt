@@ -1,0 +1,42 @@
+# im not sure if C# has a built in way to handle json but it shouldnt be that hard
+# there will also be other variables in the json like a description but it gets tedious to write and is pretty easy to understand
+class node{
+    list of nodes called subNodes
+
+    string name    
+    int cost     
+
+    bool unlocked = false
+
+    void function node(string name, json sub, int cost ){
+        this.name = name
+        this.cost = cost
+
+        for jsonElement in sub{
+            string newName = jsonElement["name"]
+            int newCost = jsonElement["cost"]
+            
+            json newSub = jsonElement["sub"]
+
+            node newNode = node(newName,newSub,newCost)
+
+            this.subNodes.Add(newNode)
+        }
+    }
+
+    void unlock() {
+        player.money -= this.cost
+        this.unlocked = true
+
+        apply effects of upgrade to the player
+    }
+
+}
+
+
+string location #location of json file
+
+json wholeJson = json.load(location)
+
+node mainNode = node("",wholeJson,0)
+
