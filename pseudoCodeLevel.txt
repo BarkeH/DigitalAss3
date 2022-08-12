@@ -1,0 +1,98 @@
+float function perlin(float x, float y){
+    int x0 = floor x
+    int x1 = x0 + 1
+    int y0 = floor y
+    int y1 = y0 + 1
+
+    float sx = x - x0
+    float sy = y - y0
+
+    float n0 = gridGradient(x0,y0,x,y)
+    float n1 = gridGradient(x1,y0,x,y)
+    float ix0 = interpolate(n0, n1, sx)
+
+    n0 = gridGradient(x0,y1,x,y)
+    n1 = gridGradient(x1,y1,x,y)
+    ix1 = interpolate(n0,n1.sx)
+
+    return interpolate(n0,n1,sx)
+}
+
+float function gridGradient(int ix, int iy, float x, float y){
+    vector2 gradient = randomGradient(ix,iy)
+    float dx = x - ix
+    float dy = y - iy
+
+    return (dx*gradient.x + dy*gradient.y)
+}
+
+# i have no idea how this part works 
+float function randomGradient(int ix, int iy){
+    const unsigned w = 8 * sizeof(unsigned)
+    const unsigned s = w / 2
+    unsigned a = ix, b = i
+    a *= 3284157443
+    b ^= a << s | a >> w-s
+    b *= 1911520717
+    a ^= b << s | b >> w-s
+    a *= 2048419325
+    float random = a * (3.14159265 / ~(~0u >> 1));
+    vector2 v
+    v.x = cos(random); v.y = sin(random)
+    return v
+}
+
+float function interpolate(float a0, float a1, float w){
+    return (a1 - a0) * w + a0
+}
+
+float wall threshold
+float enemy threshold
+
+int levelx
+int levely
+
+# zone determines how difficult the enemies are
+int zone 
+
+list2d of level layout with  and name levelwalls
+
+array of locations of csv files that contain prefabbed levels
+string location = random element of csv array
+
+using(var reader = new StreamReader(location))
+{
+    levely = length of file
+    while (!reader.EndOfStream)
+    {
+        var line = reader.ReadLine();
+        var values = line.Split(',');
+
+        levelx = length of values
+
+        levelwalls.Add(values);
+    }
+
+}
+
+array2d of level enemies with size levely,levelx and name levelenemies
+
+for (float y = 0; y < levely; y ++){
+    for (float x = 0; x < levelx; x ++){
+        if levelwalls[y][x] == 0 {
+            float wallvalue = perlin(x/5,y/5)
+            if wallvalue > wall threshold{
+                levelwalls[y][x] = 1
+            }else{
+                
+                float enemyvalue = perlin(x/5+100,y/5+100)
+
+                if enemyvalue > enemy threshold{
+                    levelenemies[y][x] = random enemy
+                }
+            }
+        }
+        
+    }
+}
+
